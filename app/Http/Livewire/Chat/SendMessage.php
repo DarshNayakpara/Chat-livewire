@@ -45,6 +45,7 @@ class SendMessage extends Component
       
         $this->reset('body');
         $this->emitSelf('dispatchSendMessage');
+        
      
 
     }

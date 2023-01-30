@@ -19,8 +19,10 @@ class Chatbox extends Component
     public $messages_count;
     public $paginateVar = 10;
     public $height;
+    public $auth_id;
     // protected $listeners = ['loadConversation','pushMessage','loadmore','currentHeight'];
 
+    
 
     public function getListeners(){
 
@@ -28,8 +30,12 @@ class Chatbox extends Component
         return [
             "echo-private:chat.{$auth_id},MessageSent" => 'broadcastedMessageReceived', 
             "echo-private:chat.{$auth_id},MessageRead" => 'broadcastMessageRead',  
-            'loadConversation', 'pushMessage', 'loadmore', 'updateHeight','broadMessageRead'
+            'loadConversation', 'pushMessage', 'loadmore', 'updateHeight','broadMessageRead' , 'resetComponent'
         ];
+    }
+    public function resetComponent(){
+        $this->selectedConversation = null;
+        $this->receiverInstance = null;
     }
     // public function getListeners()
     // {
@@ -104,6 +110,8 @@ class Chatbox extends Component
 
     public function loadConversation(Conversation $conversation,User $receiver)
     {
+        $auth_id = auth()->user()->id;
+        $this->auth_id = $auth_id;
         // dd($conversation,$receiver);
         $this->selectedConversation = $conversation;
         $this->receiverInstance = $receiver;
@@ -114,7 +122,10 @@ class Chatbox extends Component
 
         $this->dispatchBrowserEvent('chatSelected');
 
+        Message::where('conversation_id',$this->selectedConversation->id)->where('receiver_id',$this->auth_id)->update(['read'=>1]);
 
+        $this->emitSelf('broadMessageRead');
+         $this->emitTo('chat.chat-list','refreshConversationList');
     }
     public function render()
     {

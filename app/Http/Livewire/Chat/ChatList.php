@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Chat;
 use Livewire\Component;
 use App\Models\User;
 use App\Models\Conversation;
+use App\Models\Message;
 class ChatList extends Component
 {
     public $auth_id;
@@ -13,7 +14,7 @@ class ChatList extends Component
     public $name;
     public $selectedConversation;
 
-    protected $listeners= ['chatUserSelected','refreshConversationList'=> '$refresh','resetComponent'];
+    protected $listeners= ['chatUserSelected','refreshConversationList' => '$refresh','resetComponent'];
 
     public function resetComponent(){
         $this->selectedConversation = null;
@@ -27,7 +28,11 @@ class ChatList extends Component
 
        $receiverInstance  = User::find($receiverId);
 
+       
+       // update all Message as Read when user click on conversation
+      
        $this->emitTo('chat.chatbox','loadConversation', $this->selectedConversation,$receiverInstance);
+       
 
         $this->emitTo('chat.send-message','updateSendMessage',$this->selectedConversation,$receiverInstance);
     

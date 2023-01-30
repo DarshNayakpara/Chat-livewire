@@ -40,9 +40,21 @@
                             <div class="message_body text-truncate">
                               {{$item->messages->last()->body}}
                             </div>
-                            56
-                           
+                            
+                            {{-- <div class="unread_count badge rounded-pill text-light bg-danger">
 
+                                56
+                            </div> --}}
+                           
+                            @php
+                                if(count($item->messages->where('read',0)->where('receiver_id',Auth()->user()->id))){
+
+                             echo ' <div class="unread_count badge rounded-pill text-light bg-danger">  '
+                                 . count($item->messages->where('read',0)->where('receiver_id',Auth()->user()->id)) .'</div> ';
+
+                                }
+
+                            @endphp
                         </div>
                     </div>
                 </div>
